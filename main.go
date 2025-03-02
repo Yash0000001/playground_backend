@@ -22,6 +22,6 @@ func main() {
 		return c.SendString("Hello, World!")
 	})
 
-	app.Post("/api/v1/run/python", routes.Run_handler)
+	app.Post("/api/v1/run", routes.Run_handler)
 	log.Fatal(app.Listen(":" + port))
 }

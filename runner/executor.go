@@ -10,7 +10,7 @@ import (
 	"github.com/yash0000001/playgroundbackend/utils"
 )
 
-func CompileAndRun(code, language string) (string, string, error) {
+func CompileAndRun(code, language string) (string, string, int64, error) {
 	u := uuid.New()
 	var fileName string
 	if language == "cpp" {
@@ -27,20 +27,28 @@ func CompileAndRun(code, language string) (string, string, error) {
 	}
 	defer os.Remove(fullPath)
 
+	initialTime := time.Now()
 	if language == "cpp" {
 		execPath := strings.TrimSuffix(fullPath, ".cpp")
 		_, stderr, err := utils.ExecuteCmd("g++", fullPath, "-o", execPath)
+		defer os.Remove(execPath + ".exe")
 		if err != nil {
 			fmt.Println("Compilation failed:", stderr)
-			return "", "", err
+			return "", "", 0, err
 		}
 		stdout, stderr, err := utils.ExecuteCmd("./" + execPath)
-		return stdout, stderr, err
+		finalTime := time.Now()
+		diff := finalTime.Sub(initialTime).Milliseconds()
+		return stdout, stderr, diff, err
 	} else if language == "go" {
 		stdout, stderr, err := utils.ExecuteCmd("go", "run", fullPath)
-		return stdout, stderr, err
+		finalTime := time.Now()
+		diff := finalTime.Sub(initialTime).Milliseconds()
+		return stdout, stderr, diff, err
 	} else {
 		stdout, stderr, err := utils.ExecuteCmd("python", fullPath)
-		return stdout, stderr, err
+		finalTime := time.Now()
+		diff := finalTime.Sub(initialTime).Milliseconds()
+		return stdout, stderr, diff, err
 	}
 }
