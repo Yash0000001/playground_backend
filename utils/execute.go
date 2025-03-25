@@ -25,7 +25,7 @@ func ExecuteCmd(command string, args ...string) (string, string, error) {
 		if err != nil {
 			return out.String(), stderr.String(), fmt.Errorf("execution failed: %w", err)
 		}
-	case <-time.After(3 * time.Second): // Timeout after 3 seconds
+	case <-time.After(20 * time.Second): // Timeout after 3 seconds
 		cmd.Process.Kill()
 		return "", "Execution timed out", fmt.Errorf("execution timed out")
 	}
